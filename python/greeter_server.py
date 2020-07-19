@@ -29,12 +29,11 @@ class Greeter(helloworld_pb2_grpc.GreeterServicer):
 
     def SayHello(self, request, context):
         time.sleep(0.05)
-        #print(f"JEJE {self.process_id}")
         return helloworld_pb2.HelloReply(message='Hello, %s!' % request.name)
 
 
 def serve(num):
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2000))#, options=[('grpc.so_reuseport', 1)])
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2000), options=[('grpc.so_reuseport', 1)])
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(num), server)
     server.add_insecure_port('[::]:50051')
     server.start()
@@ -45,6 +44,6 @@ def serve(num):
 if __name__ == '__main__':
     logging.basicConfig()
 
-    for i in range(6):
+    for i in range(4):
         p = multiprocessing.Process(target=serve, args=(i,))
         p.start()
